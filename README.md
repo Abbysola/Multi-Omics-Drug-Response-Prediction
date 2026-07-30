@@ -1,30 +1,169 @@
 # Mechanism-Aware Drug Response Prediction with Multi-Omics Data
 
-## About the project
+## Project Summary
 
-Cancer cell lines respond differently because of their molecular characteristics, and multi-omics data provide complementary information for studying these differences.
+Cancer cell lines exhibit diverse responses to anti-cancer drugs due to differences in their molecular characteristics. Integrating multiple molecular data types provides an opportunity to better understand these differences and improve drug-response prediction.
 
-This project develops a mechanism-aware prediction pipeline using CTRPv2 drug response and cancer cell-line omics. It compares single-omics and integrated strategies, evaluates AAC prediction, and uses SHAP and pathway analysis to identify molecular drivers across drug mechanism-of-action classes.
+This project presents a mechanism-aware machine learning framework for predicting cancer drug response using multi-omics data from cancer cell lines. Multiple modelling strategies—including single-omics, early fusion, late fusion, and metadata-augmented approaches—were evaluated across 426 compounds using rigorous cross-validation. Model interpretation was performed using SHAP, followed by pathway enrichment analysis to investigate the biological mechanisms underlying different drug mechanism-of-action (MOA) classes.
 
-The project asks
+The study combines predictive modelling with biological interpretation to identify both high-performing machine learning models and the molecular signals that drive drug response across different therapeutic mechanisms.
 
-> Which molecular data types (gene expression, mutations, DNA methylation, copy-number variation, and proteomics) are most predictive of cancer drug response, and does their relative importance differ across drug mechanism-of-action (MOA) classes?
+## Project Highlights
 
-## Cohort ablation
+- **574** harmonized cancer cell lines
+- **426** anti-cancer compounds evaluated
+- Multi-omics integration using gene expression, mutations, copy-number variation, methylation, and proteomics
+- Six machine learning models evaluated, including XGBoost and LightGBM
+- **36** modelling configurations benchmarked
+- **2,130** cross-validation evaluations (426 compounds × 5 folds)
+- SHAP-based model interpretation across drug mechanism-of-action (MOA) classes
+- KEGG and Gene Ontology pathway enrichment analysis
+- Best model achieved a mean Pearson correlation of **0.4175**
 
-The cohort ablation compared omics-layer availability and usable cohort size, results are shown below.
+## My Role & Contributions
 
-| Cohort | Cell lines | Ridge Pearson | XGBoost Pearson |
+This repository is my portfolio version of a collaborative MSc Data Science research project completed at **Freie Universität Berlin**. The original project was developed as a team effort, with different members contributing to data acquisition, modelling, biological interpretation, and documentation.
+
+My primary responsibility focused on the **model development, evaluation, and experimental validation** stages of the project. In addition to implementing core components of the modelling workflow, I also contributed to improving the reproducibility, consistency, and presentation of the final research pipeline.
+
+My contributions included:
+
+- Designing and implementing fold-wise ComBat batch correction for gene expression data within the cross-validation pipeline to reduce batch effects while preventing information leakage.
+- Conducting cohort-ablation experiments to evaluate the impact of different omics-layer combinations and cohort sizes on predictive performance.
+- Evaluating multiple feature representations, feature-selection strategies, and dimensionality configurations to identify robust modelling approaches.
+- Implementing fold-specific preprocessing and feature scaling to ensure unbiased cross-validation.
+- Performing hyperparameter optimization for the Ridge + SelectKBest modelling pipeline.
+- Consolidating and analyzing results from **426 compounds across 36 modelling configurations** executed on the university's Slurm compute cluster.
+- Aggregating experiment outputs from Weights & Biases to identify the best-performing modelling strategies.
+- Producing publication-quality visualizations used throughout the model development and evaluation workflow.
+- Reviewing, refining, and improving notebook organization, experimental consistency, documentation, and result presentation across multiple stages of the project.
+- Collaborating with the team on modelling decisions, experimental validation, and interpretation of the final results.
+
+While this repository highlights my individual technical contributions, the overall project represents a collaborative research effort, and credit is shared across the project team.
+
+## Research Question
+
+Cancer drug response is influenced by complex molecular mechanisms that cannot be fully captured by a single omics layer. While gene expression, mutations, copy-number variation, DNA methylation, and proteomics each provide valuable biological information, their relative predictive value—and whether combining them improves performance—remains an open question.
+
+This project investigates the following research question:
+
+> **Which molecular data types (gene expression, mutations, DNA methylation, copy-number variation, and proteomics) are most predictive of cancer drug response, and does their relative importance differ across drug mechanism-of-action (MOA) classes?**
+
+To answer this question, we compared multiple machine learning models, evaluated different multi-omics integration strategies, and used SHAP together with pathway enrichment analysis to interpret the biological mechanisms driving model predictions.
+
+## Technical Workflow
+
+The project follows an end-to-end machine learning workflow, beginning with raw multi-omics data integration and ending with biologically interpretable model predictions.
+
+```text
+Raw Multi-Omics Data
+        │
+        ▼
+Data Harmonization & Quality Control
+        │
+        ▼
+Feature Selection & Preprocessing
+        │
+        ▼
+Cross-Validation Pipeline
+        │
+        ▼
+Model Training & Evaluation
+        │
+        ▼
+Best Model Selection
+        │
+        ▼
+SHAP Interpretation
+        │
+        ▼
+MOA Analysis
+        │
+        ▼
+KEGG / GO Pathway Enrichment
+```
+
+Throughout model development, preprocessing operations—including feature scaling and batch correction—were fitted only on the training folds during cross-validation to prevent information leakage and ensure unbiased model evaluation.
+
+## Dataset Overview
+
+The study integrates publicly available cancer cell-line and drug-response datasets to investigate mechanism-aware drug response prediction using multiple molecular data types.
+
+### Omics Data
+
+The following molecular modalities were considered during the study:
+
+| Omics Layer | Source |
+|------------|--------|
+| Gene Expression | DepMap Public 26Q1 |
+| Somatic Mutations | DepMap Public 26Q1 |
+| Copy Number Variation (CNV) | DepMap Public 26Q1 |
+| DNA Methylation | CCLE |
+| Proteomics | Cell Model Passports |
+
+### Drug Response
+
+Drug-response measurements were obtained from **CTRPv2 (Cancer Therapeutics Response Portal v2)** using Area Above the Curve (AAC) as the prediction target.
+
+### Initial Dataset
+
+Before cohort selection, the available datasets contained:
+
+| Dataset | Cell Lines |
+|---------|-----------:|
+| Gene Expression | 1,719 |
+| Somatic Mutations | 1,968 |
+| Copy Number Variation | 1,118 |
+| DNA Methylation | 842 |
+| Proteomics | 947 |
+
+Because not every cell line contained every omics layer, several candidate cohorts were evaluated before selecting the final modelling cohort.
+
+## Cohort Selection & Ablation
+
+## Cohort Selection & Ablation
+
+A key challenge in multi-omics modelling is balancing the number of molecular modalities with the number of available samples. Requiring additional omics layers reduces the number of eligible cell lines, while removing modalities increases cohort size but may discard potentially informative biological signals.
+
+To quantify this trade-off, cohort-ablation experiments compared different combinations of omics layers and evaluated their impact on predictive performance.
+
+| Cohort | Cell Lines | Ridge Pearson | XGBoost Pearson |
 | --- | ---: | ---: | ---: |
 | Five omics | 389 | 0.560 | 0.535 |
-| Four omics without proteomics | 508 | 0.586 | 0.567 |
-| Three omics without proteomics or methylation | 574 | 0.604 | 0.596 |
+| Four omics (without proteomics) | 508 | 0.586 | 0.567 |
+| Three omics (without proteomics and methylation) | **574** | **0.604** | **0.596** |
 
-These values are mean CV Pearson correlations from the same 12-compound evaluation. Ridge or RidgeSelectK outperformed XGBoost at each cohort size, and expression-only Ridge remained the best configuration. As the omics set and cohort size changed together, the comparison does not isolate the effect of dropping a layer. These diagnostic results are not directly comparable with the full 426 compound results below.
+The results showed that increasing the number of available cell lines had a greater impact on prediction performance than retaining every omics layer. Although removing proteomics and methylation reduced the amount of molecular information available, the larger cohort consistently produced better predictive performance.
 
-## Final model result comparison
+These experiments informed the selection of the final modelling cohort consisting of **574 cancer cell lines** using **gene expression, somatic mutations, and copy-number variation**.
 
-The table below provides the top ten configurations from the full 426 compound run. Metrics are averaged across 2,130 compound-fold evaluations (426 compounds x 5 folds).
+> **My contribution:** I designed and conducted the cohort-ablation experiments, compared alternative cohort configurations, and analyzed the trade-offs between cohort size, omics availability, and predictive performance to support the final modelling decisions.
+
+## Model Evaluation
+
+A total of **36 modelling configurations** were evaluated across **426 eligible compounds** using five-fold cross-validation, resulting in **2,130 individual compound-fold evaluations**.
+
+The experiments compared:
+
+- Single-omics models
+- Early multi-omics fusion
+- Late fusion
+- Metadata-augmented models
+- Linear and tree-based machine learning algorithms
+
+Performance was evaluated using:
+
+- Pearson Correlation (primary metric)
+- Spearman Correlation
+- RMSE
+- MAE
+- R²
+
+The table below summarises the highest-performing configurations.
+
+## Final Model Performance
+
+The table below presents the ten best-performing modelling configurations across the complete benchmark.
 
 | Rank | Model | Strategy | Features | Pearson | Spearman | R-squared | RMSE |
 | ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
@@ -39,51 +178,160 @@ The table below provides the top ten configurations from the full 426 compound r
 | 9 | XGBoost | Late fusion | Expression + mutations + CNV | 0.4016 | 0.3507 | 0.1397 | 0.0885 |
 | 10 | LightGBM | Late fusion | Expression + mutations + CNV | 0.3924 | 0.3418 | 0.1320 | 0.0889 |
 
-### Result plot
+## Key Findings
 
-![Cross-validated Pearson correlation by modeling strategy](Plots/cv_pearson_by_strategy.png)
+The experimental evaluation produced several important insights:
 
-The plot shows compound fold Pearson correlations for 426 compounds across the modeling strategies after fold-safe batch correction. XGBoost and LightGBM generally performed better than the linear models for the fusion strategies, while the wide distributions show variation between compounds. XGBoost with early multi-omics fusion achieved the best overall result (mean Pearson = 0.4175).
+- **Early multi-omics fusion consistently achieved the strongest predictive performance**, with XGBoost producing the highest overall Pearson correlation.
+- **Gene expression remained the single most informative molecular modality**, performing competitively even without additional omics layers.
+- **Increasing cohort size had a larger impact than retaining every omics layer**, highlighting the importance of sample availability in predictive modelling.
+- **Tree-based ensemble methods consistently outperformed linear models** across the strongest-performing configurations.
+- Incorporating lineage metadata produced only modest improvements, suggesting that molecular information already captured much of the variation associated with tissue lineage.
 
-## MOA and SHAP
+These findings demonstrate that carefully designed multi-omics integration strategies can improve predictive performance while maintaining biological interpretability.
 
-### MOA Resolution
+## Performance Visualization
 
-Every CTRPv2 compound needed a mechanism-of-action (MOA) label before comparing omics-layer importance across drug mechanisms. ChEMBL alone covered only 13% of compounds, so a multi-source waterfall (ChEMBL, PRISM, PubChem, manual review) was used to resolve the rest.
+The figure below summarises cross-validated Pearson correlation across the evaluated modelling strategies.
 
-| Step | Compounds resolved |
-| --- | ---: |
-| Baseline (ChEMBL ID + manual name rules) | 110 / 544 (20%) |
-| + InChIKey, PRISM Repurposing Hub, PubChem MeSH, INN suffix | 233 / 544 (43%) |
-| + team manual review (242 compounds) | 323 / 544 (59%) |
+![Cross-validated Pearson correlation by modelling strategy](Plots/cv_pearson_by_strategy.png)
 
-Classes with fewer than 5 resolved compounds were merged into `Other/Unknown` for statistical reliability.
+The distribution of performance across compounds highlights the variability in prediction difficulty while demonstrating the consistent advantage of tree-based ensemble methods. XGBoost with early multi-omics fusion achieved the best overall performance (mean Pearson = 0.4175).
 
-### SHAP computation
+## Key Technical Decisions
 
-SHAP values are computed for the best cross-validated configuration, averaged across the 5 saved fold models per compound. SHAP succeeded for 379/426 modeled compounds; the 47 failures are almost entirely two-drug combination treatments.
+Several design choices were made to improve the robustness, reproducibility, and biological validity of the modelling pipeline.
 
-### Result plot
+| Decision | Motivation |
+|-----------|------------|
+| Fold-wise StandardScaler | Prevent information leakage during cross-validation |
+| Fold-wise ComBat batch correction | Remove batch effects while preserving unbiased evaluation |
+| Five-fold cross-validation | Produce robust performance estimates across compounds |
+| Pearson correlation as the primary metric | Measure agreement between predicted and observed drug response |
+| Multiple feature-selection strategies | Compare predictive performance across different feature representations |
+| SHAP values | Interpret feature importance for individual compounds and MOA classes |
+| KEGG & Gene Ontology enrichment | Connect predictive features with underlying biological pathways |
+| Fixed random seeds | Improve reproducibility across experiments |
+
+> **My contribution:** I implemented several of these experimental design decisions, including fold-wise preprocessing, batch correction, cohort evaluation, hyperparameter optimization, and comparative benchmarking to ensure the modelling pipeline remained reproducible and free from information leakage.
+
+## Mechanism-of-Action (MOA) Annotation
+
+Understanding *why* a model makes accurate predictions requires grouping compounds according to their biological mechanisms. However, publicly available mechanism-of-action (MOA) annotations were incomplete and inconsistent across different databases.
+
+To maximise compound coverage, a multi-source annotation workflow combined information from:
+
+- ChEMBL
+- PRISM Repurposing Hub
+- PubChem
+- Manual literature review
+
+This progressive annotation strategy substantially increased MOA coverage before downstream biological interpretation.
+
+| Annotation Stage | Compounds Resolved |
+|------------------|-------------------:|
+| Initial ChEMBL matching | 110 / 544 (20%) |
+| Multi-source automatic annotation | 233 / 544 (43%) |
+| Team manual review | **323 / 544 (59%)** |
+
+To improve statistical reliability, MOA classes represented by fewer than five compounds were merged into a single **Other/Unknown** category before downstream analysis.
+
+## Model Interpretation with SHAP
+
+To understand which molecular features contributed to model predictions, SHAP (SHapley Additive exPlanations) was applied to the best-performing modelling configuration.
+
+Rather than analysing a single trained model, SHAP values were computed across the five cross-validation folds and aggregated to obtain stable feature-importance estimates for each compound.
+
+Overall:
+
+- SHAP analysis successfully completed for **379 of 426 compounds**
+- The remaining compounds primarily consisted of combination therapies that could not be reliably interpreted using the current workflow
+- Feature importance scores were aggregated by gene, omics layer, compound, and MOA class to support downstream biological interpretation
+
+This approach enabled direct comparison of the molecular signals driving prediction across different drug mechanisms.
+
+## SHAP Results
+
+The figure below summarises the relative contribution of each omics layer across the resolved MOA classes.
 
 ![Normalised omics-layer importance per MOA class](Plots/moa_layer_importance_heatmap.png)
 
-## Pathway enrichment (KEGG/GO)
+Gene expression consistently provided the strongest predictive signal across most drug mechanism classes, while mutations and copy-number variation contributed additional information for specific therapeutic mechanisms. These findings demonstrate that the predictive importance of molecular features depends on the biological mechanism targeted by each drug class.
 
-For each MOA class, the top-30 genes by mean |SHAP| were tested against six gene-set libraries (KEGG, GO Biological Process, GO Molecular Function, GO Cellular Component, Reactome, MSigDB Hallmark) using a custom background restricted to the 2,804 genes ever selected into any omics feature matrix, rather than the whole genome.
+## Biological Pathway Enrichment
 
-Across 8 MOA classes x 6 libraries (6,559 terms tested), 36 terms passed FDR < 0.05. The cleanest class-specific hit was "Drug metabolism" (KEGG) in the Metabolic class (3/14 genes, FDR = 0.02), driven by detoxification genes (MGST1, ALDH3A1, NQO1, GPX3, CES1, AKR1B10). GO Biological Process additionally recovered an EGFR-signaling signal for Epigenetic drugs (FDR = 0.0007) and a shared Rho-signaling term for Kinase inhibitor and Receptor classes. Most other elevated terms were shared across three or more classes and read as a general cell-fitness background rather than mechanism-specific signal.
+To investigate the biological processes underlying the model predictions, pathway enrichment analysis was performed using the top 30 genes ranked by mean absolute SHAP value for each MOA class.
 
-### Result plot
+Enrichment analysis was carried out across multiple pathway databases, including:
+
+- KEGG
+- Gene Ontology (Biological Process, Molecular Function, and Cellular Component)
+- Reactome
+- MSigDB Hallmark
+
+Rather than using the entire genome as the background, enrichment was performed against the **2,804 genes** included in the modelling pipeline, providing a more appropriate statistical comparison.
+
+### Key Findings
+
+The analysis identified several biologically meaningful, mechanism-specific pathways, including:
+
+- **Drug metabolism** pathways for metabolic-targeting compounds.
+- **EGFR signalling** enrichment for epigenetic drug classes.
+- **Rho signalling** pathways shared across kinase inhibitor and receptor-targeting compounds.
+
+These results demonstrate that the molecular features identified by the predictive models correspond to established biological pathways, supporting the biological relevance of the modelling framework.
 
 ![KEGG enrichment by MOA class](Plots/enrichment_KEGG_barplot.png)
 
-## Data sources
+## Biological Findings
 
-- **DepMap Public 26Q1** - cell-line metadata, gene expression, mutations, and copy-number variation.
-- **CCLE and Cell Model Passports** - DNA methylation and proteomics used in the cohort-ablation experiments.
-- **PharmacoDB CTRPv2** - compound-level AAC drug-response measurements and compound identifiers.
-- **ChEMBL, PubChem, and the PRISM Repurposing Hub** - compound mechanism-of-action annotations.
-- **Enrichr libraries** - KEGG, Gene Ontology, Reactome, and MSigDB Hallmark gene sets used for pathway enrichment.
+Across all pathway libraries and MOA classes, **36 pathways** remained statistically significant after false discovery rate correction.
+
+Notable findings included:
+
+- **Drug metabolism (KEGG)** enrichment within the Metabolic drug class.
+- Strong **EGFR signalling** enrichment for Epigenetic compounds.
+- Shared **Rho signalling** pathways across Kinase Inhibitor and Receptor-targeting drug classes.
+- Many additional enriched pathways represented general cellular fitness processes shared across multiple drug mechanisms.
+
+These results demonstrate that the predictive models captured biologically meaningful molecular patterns rather than relying solely on statistical associations.
+
+## Pathway Enrichment Visualization
+
+![KEGG enrichment by MOA class](Plots/enrichment_KEGG_barplot.png)
+
+The pathway enrichment analysis provides biological context for the molecular features identified by SHAP, connecting predictive machine learning models with established cellular pathways and therapeutic mechanisms.
+
+## Future Work
+
+Several opportunities remain to extend this work:
+
+- Perform more extensive hyperparameter optimization for tree-based models using larger computational resources.
+- Evaluate the complete feature space without aggressive dimensionality reduction.
+- Incorporate tissue-specific modelling to better capture lineage-dependent drug response.
+- Extend batch-correction experiments to the full dataset.
+- Integrate chemical structure information (e.g. SMILES representations) alongside molecular features.
+- Evaluate larger multi-omics cohorts as additional datasets become available.
+
+These extensions may further improve predictive performance while providing deeper biological insight into drug-response mechanisms.
+
+## Technical Skills Demonstrated
+
+- Machine Learning
+- Multi-Omics Data Integration
+- Feature Engineering
+- Cross-Validation
+- Hyperparameter Optimisation
+- Batch Effect Correction
+- Explainable AI (SHAP)
+- Biological Pathway Analysis
+- Statistical Evaluation
+- Python
+- Pandas
+- Scikit-learn
+- XGBoost
+- LightGBM
+- Weights & Biases
 
 ## Workflow
 
@@ -94,7 +342,7 @@ git clone https://github.com/Hrishikesh332/Multi-Omics-Mechanism-Modelling-AAC.g
 cd Multi-Omics-Mechanism-Modelling-AAC
 ```
 
-### 2. Create an environment
+### 2. Create the environment
 
 
 ```bash
@@ -105,7 +353,7 @@ python -m pip install jupyter pandas numpy scipy scikit-learn umap-learn \
   xgboost lightgbm shap gseapy
 ```
 
-### 3. Run the workflow
+### 3. Execute the notebooks
 
 Run the notebooks in this order:
 
@@ -114,24 +362,26 @@ Run the notebooks in this order:
 3. `03_shap_moa_analysis.ipynb` calculates SHAP importance and compares results across MOA classes.
 4. `04_kegg_go_enrichment.ipynb` performs pathway enrichment on SHAP-derived genes.
 
-The supporting cohort-ablation notebooks are in `02_cohort_ablations_model_dev/` and are not required for the final workflow.
+The cohort-ablation notebooks document the exploratory experiments that informed the selection of the final modelling cohort and feature representations. While they provide important experimental context for the modelling decisions, they are not required to reproduce the final prediction pipeline. They are included to provide transparency into the research process.
 
 The first two cells of `03_shap_moa_analysis.ipynb` mount and copy data from Google Drive (https://drive.google.com/drive/folders/1g__yAP27zH_jbzOgOH6KYWU8gNetdW4h?usp=sharing - 426 compounds results); skip them when running locally.
 
-## Modeling design
+## Experimental Design
 
-- **Target -** compound-specific AAC values.
-- **Eligibility -** at least 250 observed cell lines and AAC standard deviation of at least 0.04.
-- **Final omics layers -** expression, mutations, and CNV.
-- **Integration -** single-omics, early fusion, simple late fusion, learned late fusion, and lineage augmentation.
-- **Models -** ElasticNet, RidgeCV, RidgeSelectK, PLSRegression, XGBoost, and LightGBM.
-- **Evaluation -** Pearson correlation, Spearman correlation, RMSE, MAE, and R-squared.
-- **Validation -** five-fold cross-validation with scaling and batch correction fitted only on training folds.
-- **Interpretation -** fold-averaged SHAP values summarized by feature, omics layer, compound, and MOA class.
+| Component | Description |
+|-----------|-------------|
+| Prediction Target | Compound-specific AAC |
+| Eligibility | ≥250 cell lines and AAC SD ≥0.04 |
+| Omics Layers | Expression, Mutations, CNV |
+| Integration | Single, Early Fusion, Late Fusion, Metadata-Augmented |
+| Models | ElasticNet, RidgeCV, RidgeSelectK, PLSRegression, XGBoost, LightGBM |
+| Validation | Five-fold Cross Validation |
+| Metrics | Pearson, Spearman, RMSE, MAE, R² |
+| Interpretation | SHAP + KEGG + GO |
 
 Random seeds are fixed to 42 where supported. Feature scaling, selection, and batch correction are applied within training folds to reduce information leakage.
 
-## Optional W&B tracking
+## Experiment tracking
 
 Weights & Biases logging is disabled by default.
 
