@@ -296,12 +296,6 @@ Notable findings included:
 
 These results demonstrate that the predictive models captured biologically meaningful molecular patterns rather than relying solely on statistical associations.
 
-## Pathway Enrichment Visualization
-
-![KEGG enrichment by MOA class](Plots/enrichment_KEGG_barplot.png)
-
-The pathway enrichment analysis provides biological context for the molecular features identified by SHAP, connecting predictive machine learning models with established cellular pathways and therapeutic mechanisms.
-
 ## Future Work
 
 Several opportunities remain to extend this work:
