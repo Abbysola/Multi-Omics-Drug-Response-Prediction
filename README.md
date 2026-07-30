@@ -375,7 +375,7 @@ The first two cells of `03_shap_moa_analysis.ipynb` mount and copy data from Goo
 
 Random seeds are fixed to 42 where supported. Feature scaling, selection, and batch correction are applied within training folds to reduce information leakage.
 
-## Experiment tracking
+## Optional Experiment Tracking
 
 Weights & Biases logging is disabled by default.
 
