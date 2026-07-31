@@ -121,8 +121,6 @@ Because not every cell line contained every omics layer, several candidate cohor
 
 ## Cohort Selection & Ablation
 
-## Cohort Selection & Ablation
-
 A key challenge in multi-omics modelling is balancing the number of molecular modalities with the number of available samples. Requiring additional omics layers reduces the number of eligible cell lines, while removing modalities increases cohort size but may discard potentially informative biological signals.
 
 To quantify this trade-off, cohort-ablation experiments compared different combinations of omics layers and evaluated their impact on predictive performance.
@@ -332,8 +330,8 @@ These extensions may further improve predictive performance while providing deep
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Hrishikesh332/Multi-Omics-Mechanism-Modelling-AAC.git
-cd Multi-Omics-Mechanism-Modelling-AAC
+git clone https://github.com/Abbysola/multi-omics-drug-response-prediction.git
+cd Multi-Omics-Drug-Response-Prediction
 ```
 
 ### 2. Create the environment
@@ -358,7 +356,7 @@ Run the notebooks in this order:
 
 The cohort-ablation notebooks document the exploratory experiments that informed the selection of the final modelling cohort and feature representations. While they provide important experimental context for the modelling decisions, they are not required to reproduce the final prediction pipeline. They are included to provide transparency into the research process.
 
-The first two cells of `03_shap_moa_analysis.ipynb` mount and copy data from Google Drive (https://drive.google.com/drive/folders/1g__yAP27zH_jbzOgOH6KYWU8gNetdW4h?usp=sharing - 426 compounds results); skip them when running locally.
+The first two cells of `03_shap_moa_analysis.ipynb` mount and copy data from Google Drive ([https://drive.google.com/drive/folders/1g__yAP27zH_jbzOgOH6KYWU8gNetdW4h?usp=sharing](https://drive.google.com/drive/folders/1uUCP-iHixKM-J8Jj4F3eYhhNrqfI70WH?usp=sharing) - 426 compounds results); skip them when running locally. The plot training notebook also relies on model_results_v4 folder accessed through the same link.
 
 ## Experimental Design
 
